@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true,
+    "downlevelIteration": true,
+    "baseUrl": "./src",
+    "strictNullChecks": true,
+  },
+  "exclude": ["node_modules"]
+}
