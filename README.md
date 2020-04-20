@@ -23,16 +23,24 @@ const loaded = schema.load({
   age: 18,
   adminUser: true,
 });
-
 // { name: "Mike Curtis", age: 18, adminUser: true }
 
 // Fields have options that allow for coercion, default setting and validation
 const loaded2 = schema.load({
   age: '18',
 });
-
 // { name: "Anonymous", age: 18, adminUser: false }
 ```
+
+## Api Reference
+Please see [here](docs.md).
+
+## Development Philosophy
+This development goals of this are library:
+
+* Prioritise readbility and simplicity
+* Then, prioritise remaining as lightweight as possible
+* Then priotise minimising external dependencies
 
 ## License
 
