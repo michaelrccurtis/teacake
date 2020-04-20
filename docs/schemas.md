@@ -12,7 +12,7 @@ import { Schema, Fields } from 'teacake';
 
 const schema = new Schema({
   name: Fields.String(missing='Anonymous'),
-  age: Fields.Number()
+  age: Fields.Number(),
   adminUser: Fields.Bool(missing=false)
 });
 
@@ -27,16 +27,16 @@ const loaded = schema.load({
 
 ## Schema Options:
 
-| Option            |               Type                |    Default     | Description                                                                                                |
-| :---------------- | :-------------------------------: | :------------: | :--------------------------------------------------------------------------------------------------------- |
-| `unknown`         | `'INCLUDE' | 'EXCLUDE' | 'RAISE'` |  `'EXCLUDE'`   | Defines how keys not present in the schema should be treated (see below)                                   |
-| `globalFieldOpts` |      `Partial<FieldOptions>`      |      `{}`      | Options that should be applied to all fields. Note that options on individual fields will take precedence. |
-| `preLoad`         |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run before load                                                                    |
-| `postLoad`        |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run after load                                                                     |
-| `preDump`         |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run before dumping                                                                 |
-| `postDump`        |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run after dumping                                                                  |
-| `attributeMap`    |     `Record<string, string>`      |      `{}`      | Mapping of keys that should take place on load (see below)                                                 |
-| `dataKeyMap`      |     `Record<string, string>`      |      `{}`      | Mapping of keys that should take place on dumping (see below)                                              |
+| Option                        |               Type                |    Default     | Description                                                                                                |
+| :---------------------------- | :-------------------------------: | :------------: | :--------------------------------------------------------------------------------------------------------- |
+| `unknown`                     | `'INCLUDE' | 'EXCLUDE' | 'RAISE'` |  `'EXCLUDE'`   | Defines how keys not present in the schema should be treated (see below)                                   |
+| `globalFieldOpts`             |      `Partial<FieldOptions>`      |      `{}`      | Options that should be applied to all fields. Note that options on individual fields will take precedence. |
+| `preLoad`                     |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run before load                                                                    |
+| `postLoad`                    |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run after load                                                                     |
+| `preDump`                     |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run before dumping                                                                 |
+| `postDump`                    |        `(obj: any) => any`        | `(obj) => obj` | Transformation function run after dumping                                                                  |
+| `mapFieldsToSerializedKeys`   |     `Record<string, string>`      |      `{}`      | Mapping of field keys to key in serialized data                                                            |
+| `mapFieldsToDeserializedKeys` |     `Record<string, string>`      |      `{}`      | Mapping of field keys to keys in deserialized                                                              |
 
 ### Unknown Field Behaviour
 
@@ -65,7 +65,53 @@ const loaded = schema.load({ field1: "FIELD_1", field2: "FIELD_2" });
 ```
 
 ### Mapping keys
-  
-The `attributeMap` and `dataKeyMap` options allow you to specify how fields that should be mapped. Ideally, you specify this useing the key of each field when you pass it into the schema, however this is not always possible or desired.
 
+The `mapFieldsToSerializedKeys` and `mapFieldsToDeserializedKeys` options allow you to specify how fields that should be mapped. Ideally, you specify this useing the key of each field when you pass it into the schema, however this is not always possible or desired.
 
+For example:
+
+```typescript
+import { Schema, Fields } from "teacake";
+
+const schema = new Schema({
+  loadField: Fields.String(),
+}, {
+  mapFieldsToSerializedKeys: {
+    loadField: 'field' as const // loadField will look for value at at data['field']
+  }
+});
+const loaded = schema.load({ field: 'A STRING' });
+// { loadField: 'A STRING' });
+
+const schema = new Schema({
+  dumpField: Fields.String({ loadOnly: true }),
+}, {
+  mapFieldsToDeserializedKeys: {
+    dumpField: 'field' as const
+  }
+});
+const dumped = schema.dump({ field: 'A STRING' });
+// { dumpField: 'A STRING' });
+```
+
+One use case for this is where you want to specify different behaviour on load or dump:
+
+```typescript
+import { Schema, Fields } from "teacake";
+
+const schema = new Schema({
+  oldUserAgeAsString: Fields.String({ loadOnly: true }),
+  age: Fields.Number({ dumpOnly: true })
+}, {
+  mapFieldsToSerializedKeys: {
+    oldUserAgeAsString: 'age' as const
+  }
+});
+const loaded = schema.load({ age: '30' });
+// { oldUserAgeAsString: '30' };
+
+const dumped = schema.dump({ age: 30 });
+// { age: 30 }
+```
+
+Note that specifying the mapped keys with `'string' as const` allows typescript to infer the types properly. Dropping the `as const` will result in looser typing.

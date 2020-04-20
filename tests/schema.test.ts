@@ -55,13 +55,90 @@ test('basic deserialization [dump]', () => {
   });
 });
 
-test('attributeMap should be respected', () => {
-
+test('mapFieldsToDeserializedKeys should be respected', () => {
+  const schema = new Schema({
+    field: Fields.Number({ loadOnly: true }),
+    dumpField: Fields.Number({ dumpOnly: true })
+  }, {
+    mapFieldsToDeserializedKeys: {
+      dumpField: 'field'  //  dump will pull value from here
+    }
+  });
+  expect(schema.load({
+    field: 12345,
+  })).toEqual({
+    field: 12345,
+  });
+  expect(schema.dump({
+    field: 54321,
+  })).toEqual({
+    dumpField: 54321
+  });
 });
 
-test('dataKeyMap should be respected', () => {
-
+test('mapFieldsToSerializedKeys should be respected', () => {
+  const schema = new Schema({
+    loadField: Fields.String({ loadOnly: true }),
+    field: Fields.Number({ dumpOnly: true })
+  }, {
+    mapFieldsToSerializedKeys: {
+      loadField: 'field'  // load will pull value from here
+    }
+  });
+  expect(schema.load({
+    field: '12345',
+  })).toEqual({
+    loadField: '12345'
+  });
+  expect(schema.dump({
+    field: 54321,
+  })).toEqual({
+    field: 54321
+  });
 });
+
+test('map to multiple fields on load should work', () => {
+  const schema = new Schema({
+    field: Fields.Number(),
+    loadField: Fields.Number()
+  }, {
+    mapFieldsToSerializedKeys: {
+      loadField: 'field' as const
+    }
+  });
+  expect(schema.load({
+    field: 1
+  })).toEqual({
+    field: 1,
+    loadField: 1
+  });
+  expect(schema.dump({
+    field: 1,
+    loadField: 2,
+  })).toEqual({
+    field: 2,
+  });
+});
+
+test('both maps should work', () => {
+  const schema = new Schema({
+    field: Fields.Number(),
+    field2: Fields.Number()
+  }, {
+    mapFieldsToSerializedKeys: {
+      field: 'field2' as const,
+      field2: 'field' as const
+    }
+  });
+  expect(schema.load({
+    field: 1,
+    field2: 2
+  })).toEqual({
+    field: 2,
+    field2: 1
+  });
+});
+
 
 test('error object should be as expected', () => {
 

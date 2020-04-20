@@ -2,15 +2,15 @@ import { isMissing, isObject, getValue, difference, MISSING } from "utils";
 import Field, { FieldOptions } from "./fields/base"
 import ErrorStore, { ErrorMessages } from "./errors";
 
-interface SchemaOptions<A extends Record<string, string> | {} = {}, D extends Record<string, string> | {} = {}> {
+interface SchemaOptions<DK extends Record<string, string> | {} = {}, SK extends Record<string, string> | {} = {}> {
   errorMessages: ErrorMessages;
   unknown: "INCLUDE" | "EXCLUDE" | "RAISE";
   preLoad: (obj: any) => any;
   postLoad: (obj: any) => any;
   preDump: (obj: any) => any;
   postDump: (obj: any) => any;
-  attributeMap: A | {};
-  dataKeyMap: D | {};
+  mapFieldsToSerializedKeys: SK | {};
+  mapFieldsToDeserializedKeys: DK | {};
   globalFieldOpts: Partial<FieldOptions>;
 }
 
@@ -24,8 +24,8 @@ const defaultOpts: SchemaOptions = {
   postLoad: (obj) => obj,
   preDump: (obj) => obj,
   postDump: (obj) => obj,
-  attributeMap: {},
-  dataKeyMap: {},
+  mapFieldsToSerializedKeys: {},
+  mapFieldsToDeserializedKeys: {},
   globalFieldOpts: {}
 }
 
@@ -44,14 +44,14 @@ type MapKeys<T, M extends Record<string, string>> =
 
 const wrapProcessor = (processor: (obj: any) => any | undefined) => (processor) ? processor : (val: any) => val;
 
-export class Schema<F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>> {
-  opts: SchemaOptions<A, D>;
+export class Schema<F extends FieldObject, DK extends Record<string, string>, SK extends Record<string, string>> {
+  opts: SchemaOptions<DK, SK>;
   defaultOpts = defaultOpts;
   errorMessages: ErrorMessages;
   loadFields: Partial<F> = {};
   dumpFields: Partial<F> = {};
 
-  constructor(fields: F, opts: Partial<SchemaOptions<A, D>> = {}) {
+  constructor(fields: F, opts: Partial<SchemaOptions<DK, SK>> = {}) {
     this.opts = {...this.defaultOpts, ...opts};
     this.errorMessages = {...this.defaultOpts.errorMessages, ...opts.errorMessages};
 
@@ -66,72 +66,71 @@ export class Schema<F extends FieldObject, A extends Record<string, string>, D e
     }
   }
 
-  _attribute(dataKey: string) {
-    if (dataKey in this.opts.attributeMap) {
-      return (this.opts.attributeMap as Record<string, string>)[dataKey];
+  _serializedKey(key: string) {
+    if (key in this.opts.mapFieldsToSerializedKeys) {
+      return (this.opts.mapFieldsToSerializedKeys as Record<string, string>)[key];
     }
-    return dataKey;
+    return key;
   }
 
-  _dataKey(attribute: string) {
-    if (attribute in this.opts.dataKeyMap) {
-      return (this.opts.dataKeyMap as Record<string, string>)[attribute];
+  _deserializedKey(key: string) {
+    if (key in this.opts.mapFieldsToDeserializedKeys) {
+      return (this.opts.mapFieldsToDeserializedKeys as Record<string, string>)[key];
     }
-    return attribute;
+    return key;
   }
 
-  _serialize(props: {obj: any}): [any, ErrorStore] {
+  _serialize(params: {obj: any}): [any, ErrorStore] {
     const ret: any = {};
     let errors = new ErrorStore();
     for (let [fieldName, fieldObj] of Object.entries<Field>(this.dumpFields as any)) {
       const value = fieldObj.serialize({
-        attr: fieldName, obj: props.obj
+        attr: this._deserializedKey(fieldName), obj: params.obj
       });
       if (isMissing(value)) {
         // we ignore missing fields on serialization
         continue;
       }
-      const key = this._dataKey(fieldName);
+      const key = this._serializedKey(fieldName);
       ret[key] = value;
     }
     return [ret, errors];
   };
 
-  _deserialize(props: {data: any}) : [any, ErrorStore] {
+  _deserialize(params: {data: any}) : [any, ErrorStore] {
     const ret: any = {};
     let errorStore = new ErrorStore();
-    if (!isObject(props.data)) {
+    if (!isObject(params.data)) {
       errorStore.addError(this.errorMessages.type);
       return [{}, errorStore];
     }
     for (let [fieldName, fieldObj] of Object.entries<Field>(this.loadFields as any)) {
-      const key = this._dataKey(fieldName);
-      const value = getValue(props.data, key);
+      const sKey = this._serializedKey(fieldName);
+      const value = getValue(params.data, sKey);
       if (isMissing(value)) {
         // continue here if partial
       }
       let deserializedValue = MISSING;
       try {
-        deserializedValue = fieldObj.deserialize({attr: key, data: props.data})
+        deserializedValue = fieldObj.deserialize({attr: sKey, data: params.data});
       } catch (err) {
-        console.error(`Error deserializing field ${fieldName}: ${err}`)
         errorStore.addError(err.messages, fieldName);
         deserializedValue = err.validData || MISSING;
       }
 
       if (!isMissing(deserializedValue)) {
-        const attribute = this._attribute(fieldName);
-        ret[attribute] = deserializedValue;
+        const dKey = this._deserializedKey(fieldName);
+        ret[dKey] = deserializedValue;
       }
     }
 
     if (this.opts.unknown !== "EXCLUDE") {
-      const mappedFields = new Set(Object.entries(this.loadFields).map(([fieldName, fieldObj]: any, index) => this._dataKey(fieldName)));
+      const mappedFields = new Set(Object.entries(this.loadFields).map(([fieldName, fieldObj]: any, index) => this._deserializedKey(fieldName)));
 
-      var allInputFields = new Set(Object.keys(props.data));
+      var allInputFields = new Set(Object.keys(params.data));
 
       for (const key of difference(allInputFields, mappedFields)) {
-        const value = props.data[key];
+        const value = params.data[key];
         if (this.opts.unknown === "INCLUDE") {
           ret[key] = value;
         } else if (this.opts.unknown === "RAISE") {
@@ -143,7 +142,7 @@ export class Schema<F extends FieldObject, A extends Record<string, string>, D e
     return [ret, errorStore];
   };
 
-  load(loadData: any): MapKeys<F, A> {
+  load(loadData: any): MapKeys<F, DK> {
     let data = this.opts.preLoad(loadData);
     let [obj, errorStore] = this._deserialize({ data });
     // field-level- validation
@@ -154,7 +153,7 @@ export class Schema<F extends FieldObject, A extends Record<string, string>, D e
     return obj;
   };
 
-  dump(dumpObj: any) {
+  dump(dumpObj: any): MapKeys<F, SK> {
     let obj = this.opts.preDump(dumpObj);
     let [data, errors] = this._serialize({obj});
     data = this.opts.postDump(data);

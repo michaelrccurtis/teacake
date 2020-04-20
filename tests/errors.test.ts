@@ -37,5 +37,4 @@ test("merging errors", () => {
   expect(mergeErrors({ SCHEMA: ['B'] }, ['A'])).toEqual({ SCHEMA: ['B', 'A'] });
 
   expect(mergeErrors({ SCHEMA: ['B'] }, { A: ['ERROR'] })).toEqual({ A: ['ERROR'], SCHEMA: ['B'] });
-
 });
