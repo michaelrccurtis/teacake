@@ -49,7 +49,7 @@ export class Schema<F extends FieldObject, A extends Record<string, string>, D e
   loadFields: Partial<F> = {};
   dumpFields: Partial<F> = {};
 
-  constructor(fields: F, opts: Partial<SchemaOptions<A, D>>) {
+  constructor(fields: F, opts: Partial<SchemaOptions<A, D>> = {}) {
     this.opts = {...this.defaultOpts, ...opts};
     this.errorMessages = {...this.defaultOpts.errorMessages, ...opts.errorMessages};
 
@@ -154,3 +154,5 @@ export class Schema<F extends FieldObject, A extends Record<string, string>, D e
     return data;
   }
 }
+
+export default Schema;

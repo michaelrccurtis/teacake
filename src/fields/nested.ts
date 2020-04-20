@@ -1,7 +1,8 @@
 import Field, { defaultOpts, FieldOptions } from "./base";
 import { toType } from "utils";
+import { Schema } from "../schema";
 
-export class String extends Field<string> {
+export class Nested<F, A, D, S extends Schema<F, D, D>> extends Field<ReturnType<S["load"]>> {
   defaultOpts() {
     return defaultOpts
   }
@@ -26,4 +27,4 @@ export class String extends Field<string> {
   }
 }
 
-export default (opts: Partial<FieldOptions> = {}) => new String(opts);
+export default (opts: Partial<FieldOptions> = {}) => new Nested(opts);

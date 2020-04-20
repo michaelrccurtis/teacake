@@ -1,23 +1,38 @@
-const path = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const path = require("path");
+const webpack = require("webpack");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 module.exports = {
-    entry: path.join(__dirname, '/app.ts'),
-    output: {
-        filename: 'app.js',
-        path: __dirname
+    mode: 'production',
+    entry: {
+        teacake: "./src/index.ts",
     },
+    output: {
+        path: path.resolve(__dirname, "_bundles"),
+        filename: "[name].js",
+        libraryTarget: "umd",
+        library: "MyLib",
+        umdNamedDefine: true,
+    },
+    devtool: "source-map",
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
-                loader: 'ts-loader',
+                loader: "ts-loader",
                 exclude: /node_modules/,
+                options: {
+                    configFile: "tsconfig.build.json"
+                }
             },
-        ]
+        ],
     },
     resolve: {
         plugins: [new TsconfigPathsPlugin()],
-        extensions: [".tsx", ".ts", ".js"]
+        extensions: [".tsx", ".ts", ".js"],
     },
+    plugins: [
+        new UnminifiedWebpackPlugin()
+    ]
 };

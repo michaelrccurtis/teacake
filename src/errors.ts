@@ -46,9 +46,7 @@ class ErrorStore {
   }
 
   dealWithErrors(data: any, obj: any) {
-    console.log("Dealing with errors", this.errors);
     if (Object.keys(this.errors).length > 0) {
-      console.log('error present', this.errors);
       throw new ValidationError(this.errors, data, obj);
     } 
   }
