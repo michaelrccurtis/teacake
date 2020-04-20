@@ -1,6 +1,6 @@
 export const toType = (obj: any) => ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
 export const isObject = (obj: any) => toType(obj) === "object";
-export const isArray = (obj: any) => toType(obj) === "array";
+export const isArray = (obj: any): obj is any[] => toType(obj) === "array";
 
 export const difference = <A>(setA: Set<A>, setB: Set<A>): Set<A> => {
     let _difference = new Set(setA)
