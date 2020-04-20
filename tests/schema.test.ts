@@ -28,6 +28,18 @@ test('basic field properties', () => {
   });
 });
 
+test('global field opts', () => {
+  const schema = new Schema(
+    { field1: Fields.String({required: false}), field2: Fields.String({missing: 'FIELD_2'})  }, { unknown: "INCLUDE", globalFieldOpts: { missing: "MISSING" } }
+  );
+  const loaded = schema.load({
+  })
+  expect(loaded).toEqual({
+    field1: "MISSING",
+    field2: "FIELD_2"
+  });
+});
+
 test('basic deserialization [dump]', () => {
   const schema = new Schema({
     field1: Fields.String(),

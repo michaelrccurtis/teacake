@@ -21,6 +21,7 @@ export interface FieldOptions {
   loadOnly: boolean;
   dumpOnly: boolean;
   errorMessages: ErrorMessages;
+  treatErrorsAsMissing: boolean;
 }
 
 export const defaultOpts: FieldOptions = {
@@ -32,20 +33,25 @@ export const defaultOpts: FieldOptions = {
   loadOnly: false,
   dumpOnly: false,
   errorMessages: {},
+  treatErrorsAsMissing: false,
 };
 
 abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends string = string> {
     opts: O;
+    _fieldOpts: Partial<O>;
     abstract defaultOpts(): O;
     errorMessages: ErrorMessages = {
       type: "Invalid input type",
       unknownField: "Unknown Field",
     };
     constructor(opts: Partial<O>) {
-      const defaultOpts = this.defaultOpts();
-      this.opts = {...defaultOpts, ...opts};
+      this._fieldOpts = opts;
+      this.opts = {...this.defaultOpts(), ...opts};
       this.validateOpts();
       this.addErrorMessages(opts.errorMessages);
+    }
+    setGlobalFieldOpts(opts: Partial<O>) {
+      this.opts = {...this.defaultOpts(), ...opts, ...this._fieldOpts};
     }
     initialize() {
 
@@ -87,7 +93,15 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
         }
         return value;
       }
-      return this._deserialize(value, params);
+      try {
+        return this._deserialize(value, params);
+      } catch(err) {
+        if (this.opts.treatErrorsAsMissing) {
+          return this._deserialize(this.opts.missing || value, params);
+        } else {
+          throw err;
+        }
+      }
     };
 }
 

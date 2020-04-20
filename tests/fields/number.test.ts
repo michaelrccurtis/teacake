@@ -35,3 +35,8 @@ test('non numbers should throw', () => {
   expect(() => field.deserialize({ attr: 'test', data: { test: new Date() }})).toThrow(FieldValidationError);
 });
 
+
+test('treatErrorsAsMissing is respected', () => {
+  const field = Fields.Number({missing: 1234, treatErrorsAsMissing: true});
+  expect(field.deserialize({ attr: 'test', data: { test: 'A_STRING_NOT_NUMBER'} })).toBe(1234);
+});

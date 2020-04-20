@@ -1,5 +1,5 @@
 import { isMissing, isObject, getValue, difference, MISSING } from "utils";
-import Field from "./fields/base"
+import Field, { FieldOptions } from "./fields/base"
 import ErrorStore, { ErrorMessages } from "./errors";
 
 interface SchemaOptions<A extends Record<string, string> | {} = {}, D extends Record<string, string> | {} = {}> {
@@ -11,6 +11,7 @@ interface SchemaOptions<A extends Record<string, string> | {} = {}, D extends Re
   postDump: (obj: any) => any;
   attributeMap: A | {};
   dataKeyMap: D | {};
+  globalFieldOpts: Partial<FieldOptions>;
 }
 
 const defaultOpts: SchemaOptions = {
@@ -25,6 +26,7 @@ const defaultOpts: SchemaOptions = {
   postDump: (obj) => obj,
   attributeMap: {},
   dataKeyMap: {},
+  globalFieldOpts: {}
 }
 
 export interface FieldObject {
@@ -54,6 +56,7 @@ export class Schema<F extends FieldObject, A extends Record<string, string>, D e
     this.errorMessages = {...this.defaultOpts.errorMessages, ...opts.errorMessages};
 
     for (let [fieldName, fieldObj] of Object.entries(fields)) {
+      fieldObj.setGlobalFieldOpts(this.opts.globalFieldOpts);
       if (!fieldObj.opts.dumpOnly) {
         (this.loadFields as any)[fieldName] = fieldObj;
       }
