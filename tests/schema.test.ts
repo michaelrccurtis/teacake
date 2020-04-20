@@ -18,7 +18,14 @@ test('basic deserialization [load]', () => {
 });
 
 test('basic field properties', () => {
-
+  const schema = new Schema(
+    { field1: Fields.String({required: false}), field2: Fields.String({missing: 'FIELD_2'})  }, { unknown: "INCLUDE" }
+  );
+  const loaded = schema.load({
+  })
+  expect(loaded).toEqual({
+    field2: "FIELD_2"
+  });
 });
 
 test('basic deserialization [dump]', () => {

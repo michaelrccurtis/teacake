@@ -85,6 +85,7 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
         if (this.opts.required) {
           this.error('required');
         }
+        return value;
       }
       return this._deserialize(value, params);
     };

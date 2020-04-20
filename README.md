@@ -2,6 +2,10 @@
 
 Teacake is a Typescript Library for simple object de/serialisation. It is strongly inspired by the Python library [Marshmallow](https://github.com/marshmallow-code/marshmallow).
 
+The goal is to provide a simple way of:
+* loading data from an external or serialised source, and validating / coercing it into an expected shape.
+* dumping and serialising javascript objects in a consistent way, for onward
+
 
 ## Simple Example
 

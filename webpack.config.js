@@ -6,13 +6,13 @@ const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 module.exports = {
     mode: 'production',
     entry: {
-        teacake: "./src/index.ts",
+        index: "./src/index.ts",
     },
     output: {
-        path: path.resolve(__dirname, "_bundles"),
+        path: path.resolve(__dirname, "lib"),
         filename: "[name].js",
         libraryTarget: "umd",
-        library: "MyLib",
+        library: "teacake",
         umdNamedDefine: true,
     },
     devtool: "source-map",
@@ -20,7 +20,7 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                loader: "ts-loader",
+                loader: 'awesome-typescript-loader',
                 exclude: /node_modules/,
                 options: {
                     configFile: "tsconfig.build.json"

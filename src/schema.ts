@@ -103,23 +103,27 @@ export class Schema<F extends FieldObject, A extends Record<string, string>, D e
     }
     for (let [fieldName, fieldObj] of Object.entries<Field>(this.loadFields as any)) {
       const key = this._dataKey(fieldName);
-      const rawValue = getValue(props.data, key);
-      if (isMissing(rawValue)) {
+      const value = getValue(props.data, key);
+      if (isMissing(value)) {
         // continue here if partial
       }
-      const value = getValue(props.data, fieldName);
+      let deserializedValue = MISSING;
       try {
-        let deserializedValue = fieldObj._deserialize(value, {attr: fieldName, data: props.data})
+        deserializedValue = fieldObj.deserialize({attr: key, data: props.data})
       } catch (err) {
+        console.error(`Error deserializing field ${fieldName}: ${err}`)
         errorStore.addError(err.messages, fieldName);
-        let deserializedValue = err.validData || MISSING;
+        deserializedValue = err.validData || MISSING;
       }
-      const attribute = this._attribute(fieldName);
-      ret[attribute] = rawValue;
+
+      if (!isMissing(deserializedValue)) {
+        const attribute = this._attribute(fieldName);
+        ret[attribute] = deserializedValue;
+      }
     }
 
     if (this.opts.unknown !== "EXCLUDE") {
-      const mappedFields = new Set(Object.entries(this.loadFields).map(([fieldName, fieldObj]: any, index) => fieldObj.dataKey || fieldName));
+      const mappedFields = new Set(Object.entries(this.loadFields).map(([fieldName, fieldObj]: any, index) => this._dataKey(fieldName)));
 
       var allInputFields = new Set(Object.keys(props.data));
 

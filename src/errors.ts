@@ -9,7 +9,7 @@ export class FieldValidationError extends Error {
 
 export class ValidationError extends Error {
     constructor(errors: Errors, data:any = {}, validData: any = {}) {
-        super("Validation Error");
+        super("Validation Error: " + JSON.stringify(errors));
         Object.setPrototypeOf(this, ValidationError.prototype);
     }
 }
@@ -54,6 +54,7 @@ class ErrorStore {
 
   dealWithErrors(data: any, obj: any) {
     if (Object.keys(this.errors).length > 0) {
+      console.log('Erroring with error:', this.errors);
       throw new ValidationError(this.errors, data, obj);
     } 
   }
