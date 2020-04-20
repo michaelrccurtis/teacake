@@ -1,30 +1,35 @@
 import Field, { defaultOpts, FieldOptions } from "./base";
 import { toType } from "utils";
-import { Schema } from "../schema";
+import { Schema, FieldObject } from "../schema";
+import { ConfigurationError } from "errors";
 
-export class Nested<F, A, D, S extends Schema<F, D, D>> extends Field<ReturnType<S["load"]>> {
+export interface NestedFieldOptions<S> extends FieldOptions {
+  schema: S;
+}
+
+export class Nested<F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>, S extends Schema<F, D, D>> extends Field<ReturnType<S["load"]>, NestedFieldOptions<S>> {
   defaultOpts() {
-    return defaultOpts
+    return {
+      ...defaultOpts,
+      schema: (null as unknown) as S,
+    }
   }
   initialize() {
     this.addErrorMessages({
       invalid: "Not a valid string",
     })
   }
-
-  validateString(value: any) {
-    if (toType(value) !== "string") {
-      this.error('invalid');
+  validateOpts() {
+    if (this.opts.schema === null) {
+      throw new ConfigurationError("Schema on nested field must not be null");
     }
   }
   _serialize(value: any, params: any) {
-    this.validateString(value);
-    return value;
+    return this.opts.schema.dump(value);
   }
   _deserialize(value: any, params: any) {
-    this.validateString(value);
-    return value;
+    return this.opts.schema.load(value) as ReturnType<S["load"]>;
   }
 }
 
-export default (opts: Partial<FieldOptions> = {}) => new Nested(opts);
+export default <F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>, S extends Schema<F, D, D>>(opts: Partial<NestedFieldOptions<S>> = {}) => new Nested(opts);

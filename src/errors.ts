@@ -14,6 +14,13 @@ export class ValidationError extends Error {
     }
 }
 
+export class ConfigurationError extends Error {
+    constructor(msg: string) {
+        super(msg);
+        Object.setPrototypeOf(this, ConfigurationError.prototype);
+    }
+}
+
 export interface Errors {
   [fieldName: string]: this | string[]; // If it is a dictionary
   [index: number]: this | string[]; // If it is list

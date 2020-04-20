@@ -27,7 +27,7 @@ const defaultOpts: SchemaOptions = {
   dataKeyMap: {},
 }
 
-interface FieldObject {
+export interface FieldObject {
   [key: string]: Field
 }
 

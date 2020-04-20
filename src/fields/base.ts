@@ -44,10 +44,14 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
     constructor(opts: Partial<O>) {
       const defaultOpts = this.defaultOpts();
       this.opts = {...defaultOpts, ...opts};
+      this.validateOpts();
       this.addErrorMessages(opts.errorMessages);
     }
     initialize() {
 
+    }
+    validateOpts() {
+      
     }
     addErrorMessages(errorMessages: ErrorMessages | undefined) {
       this.errorMessages = {...this.errorMessages, ...errorMessages};

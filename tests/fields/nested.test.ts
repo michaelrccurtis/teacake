@@ -1,22 +1,22 @@
 import { Fields } from "fields";
 import { MISSING } from "utils";
 import { FieldValidationError } from "errors";
+import Schema from "schema";
+
 
 test('basic serialization', () => {
-  const field = Fields.String({required: false});
-  expect(field.serialize({ attr: 'test', obj: { test: 'TEST' }})).toBe('TEST');
-  expect(field.serialize({ attr: 'test', obj: { test: 'TEST' }})).toBe('TEST');
-  expect(field.serialize({ attr: 'test', obj: {} })).toBe(MISSING);
+  const field = Fields.Nested({
+    schema: new Schema({
+      field1: Fields.String(),
+      field2: Fields.String()
+    }, { preLoad: (data) => ({field1: data.field2, field2: 'OTHER'})}),
+    required: false
+  });
+  expect(field.deserialize({ attr: 'test', data: { test: {
+    field1: 'FIELD_1',
+    field2: 'FIELD_2',
+  } }})).toEqual({
+    field1: 'FIELD_2',
+    field2: 'OTHER'
+  });
 });
-
-test('non strings should throw', () => {
-  const field = Fields.String();
-
-  expect(() => field.serialize({ attr: 'test', obj: { test: 1 }})).toThrow(FieldValidationError);
-  expect(() => field.deserialize({ attr: 'test', data: { test: 1 }})).toThrow(FieldValidationError);
-  expect(() => field.serialize({ attr: 'test', obj: { test: {} }})).toThrow(FieldValidationError);
-  expect(() => field.deserialize({ attr: 'test', data: { test: {} }})).toThrow(FieldValidationError);
-  expect(() => field.serialize({ attr: 'test', obj: { test: new Date() }})).toThrow(FieldValidationError);
-  expect(() => field.deserialize({ attr: 'test', data: { test: new Date() }})).toThrow(FieldValidationError);
-});
-
