@@ -25,10 +25,10 @@ export interface FieldOptions {
 }
 
 export const defaultOpts: FieldOptions = {
+  required: true,
   default: MISSING,
   missing: MISSING,
   validate: (data: any) => null,
-  required: true,
   ignore: [undefined],
   loadOnly: false,
   dumpOnly: false,

@@ -1,6 +1,6 @@
 {
   "name": "teacake",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Simple Typescript Serialization",
   "homepage": "https://github.com/michaelrccurtis/teacake#readme",
   "main": "lib/index.js",
@@ -9,7 +9,8 @@
     "test": "jest",
     "start": "webpack-dev-server --mode development",
     "clean": "rm -rf _bundles lib lib-esm",
-    "build": "npm run clean && webpack"
+    "build": "npm run clean && webpack",
+    "docs": "docsify serve docs"
   },
   "author": {
     "name": "Mike Curtis",

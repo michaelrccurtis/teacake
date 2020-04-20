@@ -55,6 +55,17 @@ test('basic deserialization [dump]', () => {
   });
 });
 
+test('attributeMap should be respected', () => {
+
+});
+
+test('dataKeyMap should be respected', () => {
+
+});
+
+test('error object should be as expected', () => {
+
+});
 
 test('preload', () => {
   const schema = new Schema({
