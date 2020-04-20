@@ -37,7 +37,7 @@ const loaded2 = schema.load({
 ```
 
 ## Api Reference
-Please see [here](docs.md).
+See [here](https://michaelrccurtis.github.io/teacake/#/) for full teacake's full API reference and guide.
 
 ## Development Philosophy
 This development goals of this are library:
