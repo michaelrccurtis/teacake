@@ -3,12 +3,12 @@ import { FieldValidationError, ErrorMessages } from "errors";
 
 
 interface SerializeParams {
-  attr: string;
+  attr: string | number;
   obj: any;
 }
 
 interface DeserializeParams {
-  attr: string;
+  attr: string | number;
   data: any;
 }
 
@@ -38,27 +38,28 @@ export const defaultOpts: FieldOptions = {
 
 abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends string = string> {
     opts: O;
-    _fieldOpts: Partial<O>;
     abstract defaultOpts(): O;
+    abstract initialize(): void;
+
     errorMessages: ErrorMessages = {
       type: "Invalid input type",
       unknownField: "Unknown Field",
     };
+
+    _fieldOpts: Partial<O>;
+    _continueOnMissing: boolean;
+
     constructor(opts: Partial<O>) {
       this._fieldOpts = opts;
       this.opts = {...this.defaultOpts(), ...opts};
-      this.validateOpts();
       this.addErrorMessages(opts.errorMessages);
+      this._continueOnMissing = false;
+      this.initialize();
     }
     setGlobalFieldOpts(opts: Partial<O>) {
       this.opts = {...this.defaultOpts(), ...opts, ...this._fieldOpts};
     }
-    initialize() {
 
-    }
-    validateOpts() {
-      
-    }
     addErrorMessages(errorMessages: ErrorMessages | undefined) {
       this.errorMessages = {...this.errorMessages, ...errorMessages};
     }
@@ -77,7 +78,7 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
       if (isMissing(value)) {
         value = this.opts.default || value;
       }
-      if (isMissing(value)) {
+      if (isMissing(value) && !this._continueOnMissing) {
         return value;
       }
       return this._serialize(value, params)
@@ -91,7 +92,9 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
         if (this.opts.required) {
           this.error('required');
         }
-        return value;
+        if (!this._continueOnMissing) {
+          return value;
+        }
       }
       try {
         return this._deserialize(value, params);

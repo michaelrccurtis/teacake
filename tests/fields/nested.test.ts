@@ -8,7 +8,7 @@ test('basic serialization', () => {
   const field = Fields.Nested({
     schema: new Schema({
       field1: Fields.String(),
-      field2: Fields.String()
+      field2: Fields.String(),
     }, { preLoad: (data) => ({field1: data.field2, field2: 'OTHER'})}),
     required: false
   });

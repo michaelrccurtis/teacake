@@ -1,11 +1,16 @@
-import String from "./string";
-import Number from "./number";
-import Bool from "./bool";
+import StringField from "./string";
+import NumberField from "./number";
+import BoolField from "./bool";
 import Nested from "./nested";
+import FunctionField from "./function";
+import ArrayField from "./array";
+
 
 export const Fields = {
-  'String': String,
-  'Number': Number,
-  'Bool': Bool,
+  'String': StringField,
+  'Number': NumberField,
+  'Bool': BoolField,
   'Nested': Nested,
+  'Function': FunctionField,
+  'Array': ArrayField,
 }

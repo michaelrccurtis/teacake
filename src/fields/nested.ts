@@ -15,14 +15,10 @@ export class Nested<F extends FieldObject, A extends Record<string, string>, D e
     }
   }
   initialize() {
-    this.addErrorMessages({
-      invalid: "Not a valid string",
-    })
-  }
-  validateOpts() {
     if (this.opts.schema === null) {
       throw new ConfigurationError("Schema on nested field must not be null");
     }
+    this._continueOnMissing = true;
   }
   _serialize(value: any, params: any) {
     return this.opts.schema.dump(value);

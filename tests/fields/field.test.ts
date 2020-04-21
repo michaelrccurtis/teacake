@@ -3,6 +3,9 @@ import { MISSING } from "utils";
 import { FieldValidationError } from "errors";
 
 class Field extends BaseField {
+  initialize() {
+    
+  }
   defaultOpts() {
     return defaultOpts;
   }
