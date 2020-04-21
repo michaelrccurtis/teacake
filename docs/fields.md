@@ -71,11 +71,11 @@ The Bool field is designed to (de)serialize Boolean values. It takes the basic f
 
 ### String Field
 
-The Bool field is designed to (de)serialize string values.
+The String field is designed to (de)serialize string values.
 
 ### Number Field
 
-The Bool field is designed to (de)serialize string values. It takes the basic field options as above, as well as the following:
+The Number field is designed to (de)serialize string values. It takes the basic field options as above, as well as the following:
 
 | Option   |   Type    | Default | Description                                             |
 | :------- | :-------: | :-----: | :------------------------------------------------------ |
