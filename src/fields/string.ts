@@ -26,4 +26,4 @@ export class String extends Field<string> {
   }
 }
 
-export default (opts: Partial<FieldOptions> = {}) => new String(opts);
+export default (opts: FieldOptions = {}) => new String(opts);

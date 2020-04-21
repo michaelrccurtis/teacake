@@ -24,3 +24,8 @@ export const getValue = (obj: any, attr: any, ignore: any[] = [undefined]) => {
   return value;
 }
 
+type RequiredKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? never : K }[keyof T];
+type OptionalKeys<T> = { [K in keyof T]-?: {} extends Pick<T, K> ? K : never }[keyof T];
+export type OnlyOptional<T extends object> = {
+  [K in OptionalKeys<T>] : T[K]
+}

@@ -60,5 +60,5 @@ export class ObjectField<K extends Field, V extends Field> extends Field<
   }
 }
 
-export default <K extends Field, V extends Field>(opts: Partial<ObjectFieldOptions<K, V>> = {}) =>
+export default <K extends Field, V extends Field>(opts: ObjectFieldOptions<K, V>) =>
   new ObjectField(opts);

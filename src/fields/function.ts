@@ -36,4 +36,4 @@ export class FunctionField<T> extends Field<T, FunctionFieldOptions<T>> {
   }
 }
 
-export default <T>(opts: Partial<FunctionFieldOptions<T>> = {}) => new FunctionField(opts);
+export default <T>(opts: FunctionFieldOptions<T>) => new FunctionField(opts);

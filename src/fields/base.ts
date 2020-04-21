@@ -1,6 +1,6 @@
 import { getValue, MISSING, isMissing } from "utils";
 import { FieldValidationError, ErrorMessages } from "errors";
-
+import { OnlyOptional } from "utils";
 
 interface SerializeParams {
   attr: string | number;
@@ -13,18 +13,18 @@ interface DeserializeParams {
 }
 
 export interface FieldOptions {
-  default: any;
-  missing: any;
-  validate: (data: any) => void;
-  required: boolean;
-  ignore: any[];
-  loadOnly: boolean;
-  dumpOnly: boolean;
-  errorMessages: ErrorMessages;
-  treatErrorsAsMissing: boolean;
+  default?: any;
+  missing?: any;
+  validate?: (data: any) => void;
+  required?: boolean;
+  ignore?: any[];
+  loadOnly?: boolean;
+  dumpOnly?: boolean;
+  errorMessages?: ErrorMessages;
+  treatErrorsAsMissing?: boolean;
 }
 
-export const defaultOpts: FieldOptions = {
+export const defaultOpts: OnlyOptional<FieldOptions> = {
   required: true,
   default: MISSING,
   missing: MISSING,
@@ -37,8 +37,8 @@ export const defaultOpts: FieldOptions = {
 };
 
 abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends string = string> {
-    opts: O;
-    abstract defaultOpts(): O;
+    opts: Required<O>;
+    abstract defaultOpts(): OnlyOptional<O>;
     abstract initialize(): void;
 
     errorMessages: ErrorMessages = {
@@ -46,18 +46,20 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
       unknownField: "Unknown Field",
     };
 
-    _fieldOpts: Partial<O>;
+    _fieldOpts: O;
     _continueOnMissing: boolean;
 
-    constructor(opts: Partial<O>) {
+    constructor(opts: O) {
       this._fieldOpts = opts;
-      this.opts = {...this.defaultOpts(), ...opts};
-      this.addErrorMessages(opts.errorMessages);
+      // Cast here makes sense since opts must include all required properties
+      // and defaultOpts must include all optional properties
+      this.opts = {...this.defaultOpts(), ...opts} as Required<O>; 
+      this.addErrorMessages(this.opts.errorMessages);
       this._continueOnMissing = false;
       this.initialize();
     }
     setGlobalFieldOpts(opts: Partial<O>) {
-      this.opts = {...this.defaultOpts(), ...opts, ...this._fieldOpts};
+      this.opts = {...this.defaultOpts(), ...opts, ...this._fieldOpts} as Required<O>;
     }
 
     addErrorMessages(errorMessages: ErrorMessages | undefined) {

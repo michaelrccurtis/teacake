@@ -9,10 +9,7 @@ export interface NestedFieldOptions<S> extends FieldOptions {
 
 export class Nested<F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>, S extends Schema<F, D, D>> extends Field<ReturnType<S["load"]>, NestedFieldOptions<S>> {
   defaultOpts() {
-    return {
-      ...defaultOpts,
-      schema: (null as unknown) as S,
-    }
+    return defaultOpts
   }
   initialize() {
     if (this.opts.schema === null) {
@@ -28,4 +25,4 @@ export class Nested<F extends FieldObject, A extends Record<string, string>, D e
   }
 }
 
-export default <F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>, S extends Schema<F, D, D>>(opts: Partial<NestedFieldOptions<S>> = {}) => new Nested(opts);
+export default <F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>, S extends Schema<F, D, D>>(opts: NestedFieldOptions<S>) => new Nested(opts);

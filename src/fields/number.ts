@@ -4,7 +4,7 @@ import { toType } from "utils";
 const numberRegEx = new RegExp(/^-?\d*\.?\d*$/);
 
 export interface NumberFieldOptions extends FieldOptions {
-  strict: boolean;
+  strict?: boolean;
 }
 
 export class NumberField extends Field<number, NumberFieldOptions> {
@@ -47,4 +47,4 @@ export class NumberField extends Field<number, NumberFieldOptions> {
   }
 }
 
-export default (opts: Partial<NumberFieldOptions> = {}) => new NumberField(opts);
+export default (opts: NumberFieldOptions = {}) => new NumberField(opts);

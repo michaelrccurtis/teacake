@@ -15,7 +15,6 @@ export class ArrayField<V extends Field> extends Field<
     return {
       ...defaultOpts,
       required: false,
-      values: (null as unknown) as V,
     };
   }
 
@@ -48,5 +47,5 @@ export class ArrayField<V extends Field> extends Field<
   }
 }
 
-export default <V extends Field>(opts: Partial<ArrayFieldOptions<V>> = {}) =>
+export default <V extends Field>(opts: ArrayFieldOptions<V>) =>
   new ArrayField(opts);

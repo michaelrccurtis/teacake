@@ -2,9 +2,9 @@ import Field, { defaultOpts, FieldOptions } from "./base";
 import { toType } from "utils";
 
 export interface BoolFieldOptions extends FieldOptions {
-  strict: boolean;
-  validTrueStrings: string[];
-  validFalseStrings: string[];
+  strict?: boolean;
+  validTrueStrings?: string[];
+  validFalseStrings?: string[];
 }
 
 export class BoolField extends Field<boolean, BoolFieldOptions> {
@@ -52,4 +52,4 @@ export class BoolField extends Field<boolean, BoolFieldOptions> {
   }
 }
 
-export default (opts: Partial<BoolFieldOptions> = {}) => new BoolField(opts);
+export default (opts: BoolFieldOptions) => new BoolField(opts);
