@@ -1,6 +1,6 @@
 {
   "name": "teacake",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Simple Typescript Serialization",
   "homepage": "https://github.com/michaelrccurtis/teacake#readme",
   "main": "lib/index.js",
