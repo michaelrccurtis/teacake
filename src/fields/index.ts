@@ -4,6 +4,7 @@ import BoolField from "./bool";
 import Nested from "./nested";
 import FunctionField from "./function";
 import ArrayField from "./array";
+import ObjectField from "./object";
 
 
 export const Fields = {
@@ -13,4 +14,5 @@ export const Fields = {
   'Nested': Nested,
   'Function': FunctionField,
   'Array': ArrayField,
+  'Object': ObjectField,
 }
