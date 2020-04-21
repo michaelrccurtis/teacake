@@ -97,6 +97,15 @@ The Nested field is designed to (de)serialize a nested schema. It takes the basi
 | :------- | :------: | :-----: | :--------------------------------------------------------------------------- |
 | `schema` | `Schema` |   N/A   | The teacake schema object of the nested fields. This option is **required**. |
 
+### Object Field
+
+The Object field is designed to de(serialize) object values when you don't care about the schema of the object. It takes the basic field options as above, as well as the following:
+
+| Option   |  Type   | Default | Description                                                                  |
+| :------- | :-----: | :-----: | :--------------------------------------------------------------------------- |
+| `keys`   | `Field` | `false` | The expected field for the keys of the array. This option is **required**.   |
+| `values` | `Field` | `false` | The expected field for the values of the array. This option is **required**. |
+
 ### Function Field
 
 The Function field is designed to generate a dervied value from other fields. It takes the basic field options as above, as well as the following:
