@@ -17,7 +17,7 @@ import Schema from "teacake/schema";
 // First, create a schema for the data you want to load / dump
 const schema = new Schema({
   name: Fields.String(missing="Anonymous"),
-  age: Fields.Number()
+  age: Fields.Number(),
   adminUser: Fields.Bool(missing=false)
 });
 
@@ -35,16 +35,6 @@ const loaded2 = schema.load({
 });
 // { name: "Anonymous", age: 18, adminUser: false }
 ```
-
-## Api Reference
-Please see [here](docs.md).
-
-## Development Philosophy
-This development goals of this are library:
-
-* Prioritise readbility and simplicity
-* Then, prioritise remaining as lightweight as possible
-* Then priotise minimising external dependencies
 
 ## License
 
