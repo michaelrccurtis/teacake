@@ -76,9 +76,18 @@ The Bool field is designed to (de)serialize string values.
 ### Number Field
 
 The Bool field is designed to (de)serialize string values. It takes the basic field options as above, as well as the following:
-| Option | Type | Default | Description |
+
+| Option   |   Type    | Default | Description                                             |
 | :------- | :-------: | :-----: | :------------------------------------------------------ |
 | `strict` | `boolean` | `false` | If true, will not attempt to coerce strings to numbers. |
+
+### Array Field
+
+The Array field is designed to de(serialize) array values. It takes the basic field options as above, as well as the following:
+
+| Option   |  Type   | Default | Description                                                                  |
+| :------- | :-----: | :-----: | :--------------------------------------------------------------------------- |
+| `values` | `Field` | `false` | The expected field for the values of the array. This option is **required**. |
 
 ### Nested Field
 
@@ -87,3 +96,11 @@ The Nested field is designed to (de)serialize a nested schema. It takes the basi
 | Option   |   Type   | Default | Description                                                                  |
 | :------- | :------: | :-----: | :--------------------------------------------------------------------------- |
 | `schema` | `Schema` |   N/A   | The teacake schema object of the nested fields. This option is **required**. |
+
+### Function Field
+
+The Function field is designed to generate a dervied value from other fields. It takes the basic field options as above, as well as the following:
+
+| Option |              Type               | Default | Description                                                             |
+| :----- | :-----------------------------: | :-----: | :---------------------------------------------------------------------- |
+| `f`    | `(value: any, obj: any) => any` |   N/A   | A function to calculate the derived value. This option is **required**. |
