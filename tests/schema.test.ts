@@ -191,6 +191,40 @@ test("preload", () => {
   });
 });
 
+test("real world", () => {
+  const schema = new Schema(
+    {
+      area: Fields.String({ missing: "United Kingdom" }),
+      depositPct: Fields.Number({ missing: 10 }),
+      movingCosts: Fields.Number({ missing: 600 }),
+      legalFees: Fields.Number({ missing: 1200 }),
+      calculatePropertyTax: Fields.Bool({ missing: false }),
+      propertyTax: Fields.Number({ missing: 0 }),
+    },
+    {
+      unknown: "INCLUDE",
+      globalFieldOpts: {
+        ignore: [null, undefined],
+        treatErrorsAsMissing: true,
+      },
+    }
+  );
+
+  const loaded = schema.load({
+    legalFees: null,
+    calculatePropertyTax: "error",
+    movingCosts: undefined,
+  })
+  expect(loaded).toEqual({
+    area: "United Kingdom",
+    depositPct: 10,
+    movingCosts: 600,
+    legalFees: 1200,
+    calculatePropertyTax: false,
+    propertyTax: 0,
+  });
+});
+
 test("postload", () => {});
 
 test("preDump", () => {});

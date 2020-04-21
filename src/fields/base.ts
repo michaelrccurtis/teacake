@@ -84,11 +84,11 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
         return value;
       }
       return this._serialize(value, params)
-    };
+    }
     deserialize (params: DeserializeParams): T {
       let value = getValue(params.data, params.attr, this.opts.ignore);
       if (isMissing(value)) {
-        value = this.opts.missing || value;
+        value = this.opts.missing;
       }
       if (isMissing(value)) {
         if (this.opts.required) {
@@ -102,7 +102,7 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
         return this._deserialize(value, params);
       } catch(err) {
         if (this.opts.treatErrorsAsMissing) {
-          return this._deserialize(this.opts.missing || value, params);
+          return this._deserialize(this.opts.missing, params);
         } else {
           throw err;
         }
