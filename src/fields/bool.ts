@@ -52,4 +52,4 @@ export class BoolField extends Field<boolean, BoolFieldOptions> {
   }
 }
 
-export default (opts: BoolFieldOptions) => new BoolField(opts);
+export default (opts: BoolFieldOptions = {}) => new BoolField(opts);
