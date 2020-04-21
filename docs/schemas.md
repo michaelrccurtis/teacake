@@ -64,6 +64,33 @@ const loaded = schema.load({ field1: "FIELD_1", field2: "FIELD_2" });
 // { field1: "FIELD_2", field2: "OTHER" });
 ```
 
+A common transformation is to return a initialized class on load.
+
+```typescript
+class User {
+  name: string;
+  age: number;
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+const schema = new Schema(
+  {
+    name: Fields.String(),
+    age: Fields.Number(),
+  },
+  {
+    postLoad: (data) => new User(data.name, data.age),
+  }
+);
+const loaded = schema.load({
+  name: "Mike",
+  age: 30,
+});
+// User("Mike", 30)
+```
+
 ### Mapping keys
 
 The `mapFieldsToSerializedKeys` and `mapFieldsToDeserializedKeys` options allow you to specify how fields that should be mapped. Ideally, you specify this useing the key of each field when you pass it into the schema, however this is not always possible or desired.

@@ -21,6 +21,17 @@ test("function of whole object", () => {
     }),
   });
 
-  const loaded = schema.load({ field1: "START", field2: "END" });
-  expect(loaded).toEqual({ field1: "START", field2: "END", functionField: "STARTEND" });
+  const dumped = schema.dump({ field1: "START", field2: "END" });
+  expect(dumped).toEqual({ field1: "START", field2: "END", functionField: "STARTEND" });
+});
+
+test('function errors should throw field validation errors', () => {
+  const field = Fields.Function({
+    f: (value: number, obj) => {
+      const x = {};
+      return (x as any).y.z;
+    }
+  });
+
+  expect(() => field.deserialize({ attr: "test", data: { test: 2 } })).toThrow(FieldValidationError);
 });

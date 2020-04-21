@@ -16,22 +16,10 @@ export class ObjectField<K extends Field, V extends Field> extends Field<
     return {
       ...defaultOpts,
       required: false,
-      keys: (null as unknown) as K,
-      values: (null as unknown) as V,
     };
   }
 
   initialize() {
-    if (this.opts.keys === null) {
-      throw new ConfigurationError(
-        "Must set a keys option for an object field"
-      );
-    }
-    if (this.opts.values === null) {
-      throw new ConfigurationError(
-        "Must set a values option for an object field"
-      );
-    }
     this.addErrorMessages({
       invalid: "Not a valid object",
     });
@@ -41,10 +29,11 @@ export class ObjectField<K extends Field, V extends Field> extends Field<
     if (!isObject(value)) {
       this.error("invalid");
     }
-    return value.reduce((acc: any, subvalue: any, index: number) => {
+    return Object.keys(value).reduce((acc: any, _: any, index: number) => {
       const subKey = this.opts.keys.serialize({ obj: Object.keys(value), attr: index });
       const subValue = this.opts.values.serialize({ obj: Object.values(value), attr: index });
-      acc[subKey] = subvalue;
+      acc[subKey] = subValue;
+      return acc;
     }, {});
   }
   _deserialize(value: any, params: any) {

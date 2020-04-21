@@ -19,11 +19,6 @@ export class ArrayField<V extends Field> extends Field<
   }
 
   initialize() {
-    if (this.opts.values === null) {
-      throw new ConfigurationError(
-        "Must set a values option for an array field"
-      );
-    }
     this.addErrorMessages({
       invalid: "Not a valid array",
     });

@@ -1,5 +1,10 @@
 import { isArray } from "utils";
 
+export interface Errors {
+  [fieldName: string]: this | string[]; // If it is a obj
+  [index: number]: this | string[]; // If it is list
+}
+
 export class FieldValidationError extends Error {
   constructor(msg: string) {
     super(msg);
@@ -12,18 +17,6 @@ export class ValidationError extends Error {
     super("Validation Error: " + JSON.stringify(errors));
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
-}
-
-export class ConfigurationError extends Error {
-  constructor(msg: string) {
-    super(msg);
-    Object.setPrototypeOf(this, ConfigurationError.prototype);
-  }
-}
-
-export interface Errors {
-  [fieldName: string]: this | string[]; // If it is a dictionary
-  [index: number]: this | string[]; // If it is list
 }
 
 export const mergeErrors = (
@@ -86,7 +79,7 @@ class ErrorStore {
 
   dealWithErrors(data: any, obj: any) {
     if (Object.keys(this.errors).length > 0) {
-      console.log("Erroring with error:", this.errors);
+      // console.log("Erroring with error:", this.errors);
       throw new ValidationError(this.errors, data, obj);
     }
   }

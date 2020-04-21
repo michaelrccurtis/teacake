@@ -44,6 +44,7 @@ abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends s
     errorMessages: ErrorMessages = {
       type: "Invalid input type",
       unknownField: "Unknown Field",
+      required: "Field is requird"
     };
 
     _fieldOpts: O;

@@ -1,5 +1,6 @@
 import { Fields } from "fields";
 import Schema from "schema";
+import { ValidationError } from "errors";
 
 test("basic deserialization [load]", () => {
   const schema = new Schema({
@@ -30,6 +31,24 @@ test("basic field properties", () => {
   });
 });
 
+test("unknown include", () => {
+  const schema = new Schema({}, { unknown: "INCLUDE" });
+  expect(schema.load({ test: "TEST" })).toEqual({
+    test: "TEST",
+  });
+});
+
+test("unknown exclude", () => {
+  const schema = new Schema({}, { unknown: "EXCLUDE" });
+  expect(schema.load({ test: "TEST" })).toEqual({});
+});
+
+test("unknown raise", () => {
+  const schema = new Schema({}, { unknown: "RAISE" });
+  expect(() => schema.load({ test: "TEST" })).toThrow(ValidationError);
+});
+
+
 test("global field opts", () => {
   const schema = new Schema(
     {
@@ -45,10 +64,11 @@ test("global field opts", () => {
   });
 });
 
-test("basic deserialization [dump]", () => {
+test("basic serialization [dump]", () => {
   const schema = new Schema({
     field1: Fields.String(),
     field2: Fields.String(),
+    field3: Fields.String(),
   });
   const dumped = schema.dump({
     field1: "FIELD_1",
@@ -58,6 +78,20 @@ test("basic deserialization [dump]", () => {
     field1: "FIELD_1",
     field2: "FIELD_2",
   });
+});
+
+test("non objects should error on load", () => {
+  const schema = new Schema({
+    field1: Fields.String(),
+  });
+  expect(() => schema.load([])).toThrow(ValidationError);
+});
+
+test("errors in fields should be passed on ", () => {
+  const schema = new Schema({
+    field1: Fields.String(),
+  });
+  expect(() => schema.load({})).toThrow(ValidationError);
 });
 
 test("mapFieldsToDeserializedKeys should be respected", () => {
@@ -214,7 +248,7 @@ test("real world", () => {
     legalFees: null,
     calculatePropertyTax: "error",
     movingCosts: undefined,
-  })
+  });
   expect(loaded).toEqual({
     area: "United Kingdom",
     depositPct: 10,
@@ -225,7 +259,30 @@ test("real world", () => {
   });
 });
 
-test("postload", () => {});
+test("postload", () => {
+  class User {
+    name: string;
+    age: number;
+    constructor(name: string, age: number) {
+      this.name = name;
+      this.age = age;
+    }
+  }
+  const schema = new Schema(
+    {
+      name: Fields.String(),
+      age: Fields.Number(),
+    },
+    {
+      postLoad: (data) => new User(data.name, data.age),
+    }
+  );
+  const loaded = schema.load({
+    name: "Mike",
+    age: 30,
+  });
+  expect(loaded).toEqual(new User("Mike", 30));
+});
 
 test("preDump", () => {});
 

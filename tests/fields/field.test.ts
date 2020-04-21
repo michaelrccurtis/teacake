@@ -35,6 +35,11 @@ test('missing is respected', () => {
   expect(field.deserialize({ attr: 'test', data: {} })).toBe('MISSING');
 });
 
+test('required causes error', () => {
+  const field = new Field({required: true});
+  expect(() => field.deserialize({ attr: 'test', data: {} })).toThrow(FieldValidationError);
+});
+
 test('ignore is respected', () => {
   const field = new Field({required: false, ignore: [null, 'IGNORE_ME']});
   expect(field.deserialize({ attr: 'test', data: { test: null } })).toBe(MISSING);

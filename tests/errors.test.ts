@@ -1,4 +1,4 @@
-import ErrorStore, { mergeErrors } from "errors";
+import ErrorStore, { mergeErrors, FieldValidationError, ValidationError } from "errors";
 
 test("adding errors", () => {
   const store = new ErrorStore();
@@ -14,13 +14,32 @@ test("adding errors", () => {
     field2: ["ERROR_MESSAGE_3"],
   });
 
-  store.addError("ERROR_MESSAGE_4", 1);
+  store.addError(["ERROR_MESSAGE_4"], "field3");
   expect(store.errors).toEqual({
-    1: ["ERROR_MESSAGE_4"],
     field: ["ERROR_MESSAGE", "ERROR_MESSAGE_2"],
     field2: ["ERROR_MESSAGE_3"],
+    field3: ["ERROR_MESSAGE_4"]
+  });
+
+  store.addError("ERROR_MESSAGE_5", 1);
+  expect(store.errors).toEqual({
+    1: ["ERROR_MESSAGE_5"],
+    field: ["ERROR_MESSAGE", "ERROR_MESSAGE_2"],
+    field2: ["ERROR_MESSAGE_3"],
+    field3: ["ERROR_MESSAGE_4"]
   });
 });
+
+
+test("error types are as expected", () => {
+  const fieldError = new FieldValidationError("MESSAGE");
+  expect(fieldError instanceof FieldValidationError).toBe(true);
+  expect(fieldError instanceof Error).toBe(true);
+  expect(fieldError.message).toBe("MESSAGE");
+
+  const vaidationError = new ValidationError({field: ["MESSAGE"]});
+})
+
 
 test("merging errors", () => {
   const store = new ErrorStore();

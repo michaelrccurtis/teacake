@@ -12,7 +12,6 @@ export class FunctionField<T> extends Field<T, FunctionFieldOptions<T>> {
     return {
       ...defaultOpts,
       required: false,
-      f: (value: any, obj: any) => (MISSING as unknown) as T,
     }
   }
 
@@ -29,7 +28,7 @@ export class FunctionField<T> extends Field<T, FunctionFieldOptions<T>> {
   }
 
   _serialize(value: any, params: any) {
-    return this._call(value, params.data);
+    return this._call(value, params.obj);
   }
   _deserialize(value: any, params: any) {
     return this._call(value, params.data);
