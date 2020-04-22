@@ -1,7 +1,7 @@
 import Field, { defaultOpts, FieldOptions } from "./base";
 import { toType, MISSING, isObject } from "utils";
 import { Schema, FieldObject } from "../schema";
-import { FieldValidationError, ConfigurationError } from "errors";
+import { FieldValidationError } from "errors";
 
 export interface ObjectFieldOptions<K extends Field, V extends Field> extends FieldOptions {
   keys: K;

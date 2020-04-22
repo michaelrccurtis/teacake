@@ -1,7 +1,6 @@
 import Field, { defaultOpts, FieldOptions } from "./base";
 import { toType } from "utils";
 import { Schema, FieldObject } from "../schema";
-import { ConfigurationError } from "errors";
 
 export interface NestedFieldOptions<S> extends FieldOptions {
   schema: S;

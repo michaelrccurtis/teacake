@@ -1,7 +1,7 @@
 import Field, { defaultOpts, FieldOptions } from "./base";
 import { toType, MISSING, isArray } from "utils";
 import { Schema, FieldObject } from "../schema";
-import { FieldValidationError, ConfigurationError } from "errors";
+import { FieldValidationError } from "errors";
 
 export interface ArrayFieldOptions<F extends Field> extends FieldOptions {
   values: F;
