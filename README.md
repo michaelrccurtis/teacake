@@ -9,10 +9,16 @@ The goal is to provide a simple way of:
 
 ## Simple Example
 
+You can install teacake using your preferred package manager:
+
+* `npm install teacake`
+* `yarn add teacake`
+
+To get going, simply create a schema and pass data to it's `load` or `dump` methods. For example:
+
 ```typescript
 
-import { Fields } from "teacake/fields";
-import Schema from "teacake/schema";
+import { Schema, Fields } from "teacake";
 
 // First, create a schema for the data you want to load / dump
 const schema = new Schema({
