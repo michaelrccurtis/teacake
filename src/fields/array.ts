@@ -8,7 +8,7 @@ export interface ArrayFieldOptions<F extends Field> extends FieldOptions {
 }
 
 export class ArrayField<V extends Field> extends Field<
-  Array<V>,
+  Array<ReturnType<V["deserialize"]>>,
   ArrayFieldOptions<V>
 > {
   defaultOpts() {

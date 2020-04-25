@@ -9,7 +9,7 @@ export interface ObjectFieldOptions<K extends Field, V extends Field> extends Fi
 }
 
 export class ObjectField<K extends Field, V extends Field> extends Field<
-  { [key: string]: V },
+  { [key: string]: ReturnType<V["deserialize"]> },
   ObjectFieldOptions<K, V>
 > {
   defaultOpts() {
