@@ -6,9 +6,14 @@ export interface NestedFieldOptions<S> extends FieldOptions {
   schema: S;
 }
 
-export class Nested<F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>, S extends Schema<F, D, D>> extends Field<ReturnType<S["load"]>, NestedFieldOptions<S>> {
+export class Nested<
+  F extends FieldObject,
+  A extends Record<string, string>,
+  D extends Record<string, string>,
+  S extends Schema<F, D, D>
+> extends Field<ReturnType<S["load"]>, NestedFieldOptions<S>> {
   defaultOpts() {
-    return defaultOpts
+    return defaultOpts;
   }
   initialize() {
     this._continueOnMissing = true;
@@ -21,4 +26,11 @@ export class Nested<F extends FieldObject, A extends Record<string, string>, D e
   }
 }
 
-export default <F extends FieldObject, A extends Record<string, string>, D extends Record<string, string>, S extends Schema<F, D, D>>(opts: NestedFieldOptions<S>) => new Nested(opts);
+export default <
+  F extends FieldObject,
+  A extends Record<string, string>,
+  D extends Record<string, string>,
+  S extends Schema<F, D, D>
+>(
+  opts: NestedFieldOptions<S>
+) => new Nested(opts);

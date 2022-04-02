@@ -47,16 +47,13 @@ export const mergeErrors = (
     new Set(Object.keys(errors1).concat(Object.keys(errors2)))
   );
 
-  return allKeys.reduce(
-    (acc, key: string) => {
-      const ret = (acc[key] = mergeErrors(
-        (errors1 as Errors)[key],
-        (errors2 as Errors)[key] as any
-      ));
-      return acc;
-    },
-    {} as any
-  );
+  return allKeys.reduce((acc, key: string) => {
+    const ret = (acc[key] = mergeErrors(
+      (errors1 as Errors)[key],
+      (errors2 as Errors)[key] as any
+    ));
+    return acc;
+  }, {} as any);
 };
 
 class ErrorStore {

@@ -3,7 +3,8 @@ import { toType, MISSING, isObject } from "utils";
 import { Schema, FieldObject } from "../schema";
 import { FieldValidationError } from "errors";
 
-export interface ObjectFieldOptions<K extends Field, V extends Field> extends FieldOptions {
+export interface ObjectFieldOptions<K extends Field, V extends Field>
+  extends FieldOptions {
   keys: K;
   values: V;
 }
@@ -30,8 +31,14 @@ export class ObjectField<K extends Field, V extends Field> extends Field<
       this.error("invalid");
     }
     return Object.keys(value).reduce((acc: any, _: any, index: number) => {
-      const subKey = this.opts.keys.serialize({ obj: Object.keys(value), attr: index });
-      const subValue = this.opts.values.serialize({ obj: Object.values(value), attr: index });
+      const subKey = this.opts.keys.serialize({
+        obj: Object.keys(value),
+        attr: index,
+      });
+      const subValue = this.opts.values.serialize({
+        obj: Object.values(value),
+        attr: index,
+      });
       acc[subKey] = subValue;
       return acc;
     }, {});
@@ -41,13 +48,20 @@ export class ObjectField<K extends Field, V extends Field> extends Field<
       this.error("invalid");
     }
     return Object.keys(value).reduce((acc: any, _: any, index: number) => {
-      const subKey = this.opts.keys.deserialize({ data: Object.keys(value), attr: index });
-      const subValue = this.opts.values.deserialize({ data: Object.values(value), attr: index });
+      const subKey = this.opts.keys.deserialize({
+        data: Object.keys(value),
+        attr: index,
+      });
+      const subValue = this.opts.values.deserialize({
+        data: Object.values(value),
+        attr: index,
+      });
       acc[subKey] = subValue;
       return acc;
     }, {});
   }
 }
 
-export default <K extends Field, V extends Field>(opts: ObjectFieldOptions<K, V>) =>
-  new ObjectField(opts);
+export default <K extends Field, V extends Field>(
+  opts: ObjectFieldOptions<K, V>
+) => new ObjectField(opts);

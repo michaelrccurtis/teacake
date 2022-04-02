@@ -11,11 +11,9 @@ type KeyValueTupleToObject<T extends [keyof any, any]> = {
   [K in T[0]]: Extract<T, [K, any]>[1];
 };
 type MapKeys<T, M extends Record<string, string>> = KeyValueTupleToObject<
-  ValueOf<
-    {
-      [K in keyof T]: [K extends keyof M ? M[K] : K, T[K]];
-    }
-  >
+  ValueOf<{
+    [K in keyof T]: [K extends keyof M ? M[K] : K, T[K]];
+  }>
 >;
 
 type FieldReturnType<F extends FieldObject> = {
@@ -69,7 +67,13 @@ export class Schema<
   dumpFields: Partial<F> = {};
 
   constructor(fields: F, opts: Partial<SchemaOptions<F, DK, SK, PL, PD>> = {}) {
-    this.opts = { ...this.defaultOpts, ...opts } as SchemaOptions<F, DK, SK, PL, PD>;
+    this.opts = { ...this.defaultOpts, ...opts } as SchemaOptions<
+      F,
+      DK,
+      SK,
+      PL,
+      PD
+    >;
     this.errorMessages = {
       ...this.defaultOpts.errorMessages,
       ...opts.errorMessages,
@@ -158,10 +162,9 @@ export class Schema<
 
     if (this.opts.unknown !== "EXCLUDE") {
       const mappedFields = new Set(
-        Object.entries(
-          this.loadFields
-        ).map(([fieldName, fieldObj]: any, index) =>
-          this._deserializedKey(fieldName)
+        Object.entries(this.loadFields).map(
+          ([fieldName, fieldObj]: any, index) =>
+            this._deserializedKey(fieldName)
         )
       );
 

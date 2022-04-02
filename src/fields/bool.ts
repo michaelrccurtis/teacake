@@ -12,22 +12,22 @@ export class BoolField extends Field<boolean, BoolFieldOptions> {
     return {
       ...defaultOpts,
       strict: false,
-      validTrueStrings: ['true'],
-      validFalseStrings: ['false']
-    }
+      validTrueStrings: ["true"],
+      validFalseStrings: ["false"],
+    };
   }
   initialize() {
     this.addErrorMessages({
       invalid: "Not a valid bool.",
-    })
+    });
   }
 
   coerceToBool(value: any) {
     if (toType(value) === "string") {
-      if (this.opts.validTrueStrings.includes(value)){
+      if (this.opts.validTrueStrings.includes(value)) {
         return true;
       }
-      if (this.opts.validFalseStrings.includes(value)){
+      if (this.opts.validFalseStrings.includes(value)) {
         return false;
       }
     }
@@ -36,7 +36,7 @@ export class BoolField extends Field<boolean, BoolFieldOptions> {
 
   validateBool(value: any) {
     if (toType(value) !== "boolean") {
-      this.error('invalid');
+      this.error("invalid");
     }
   }
   _serialize(value: any, params: any) {

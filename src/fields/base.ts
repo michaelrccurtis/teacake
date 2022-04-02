@@ -36,79 +36,88 @@ export const defaultOpts: OnlyOptional<FieldOptions> = {
   treatErrorsAsMissing: false,
 };
 
-abstract class Field<T = any, O extends FieldOptions = FieldOptions, A extends string = string> {
-    opts: Required<O>;
-    abstract defaultOpts(): OnlyOptional<O>;
-    abstract initialize(): void;
+abstract class Field<
+  T = any,
+  O extends FieldOptions = FieldOptions,
+  A extends string = string
+> {
+  opts: Required<O>;
+  abstract defaultOpts(): OnlyOptional<O>;
+  abstract initialize(): void;
 
-    errorMessages: ErrorMessages = {
-      type: "Invalid input type",
-      unknownField: "Unknown Field",
-      required: "Field is requird"
-    };
+  errorMessages: ErrorMessages = {
+    type: "Invalid input type",
+    unknownField: "Unknown Field",
+    required: "Field is requird",
+  };
 
-    _fieldOpts: O;
-    _continueOnMissing: boolean;
+  _fieldOpts: O;
+  _continueOnMissing: boolean;
 
-    constructor(opts: O) {
-      this._fieldOpts = opts;
-      // Cast here makes sense since opts must include all required properties
-      // and defaultOpts must include all optional properties
-      this.opts = {...this.defaultOpts(), ...opts} as Required<O>; 
-      this.addErrorMessages(this.opts.errorMessages);
-      this._continueOnMissing = false;
-      this.initialize();
+  constructor(opts: O) {
+    this._fieldOpts = opts;
+    // Cast here makes sense since opts must include all required properties
+    // and defaultOpts must include all optional properties
+    this.opts = { ...this.defaultOpts(), ...opts } as Required<O>;
+    this.addErrorMessages(this.opts.errorMessages);
+    this._continueOnMissing = false;
+    this.initialize();
+  }
+  setGlobalFieldOpts(opts: Partial<O>) {
+    this.opts = {
+      ...this.defaultOpts(),
+      ...opts,
+      ...this._fieldOpts,
+    } as Required<O>;
+  }
+
+  addErrorMessages(errorMessages: ErrorMessages | undefined) {
+    this.errorMessages = { ...this.errorMessages, ...errorMessages };
+  }
+  _serialize(value: any, params: SerializeParams) {
+    return value;
+  }
+  _deserialize(value: any, params: DeserializeParams): T {
+    return value;
+  }
+  error(errorKey: string) {
+    const message =
+      this.errorMessages[errorKey] || `Error in Field: ${errorKey}`;
+    throw new FieldValidationError(message);
+  }
+  serialize(params: SerializeParams) {
+    let value = getValue(params.obj, params.attr, this.opts.ignore);
+    if (isMissing(value)) {
+      value = this.opts.default || value;
     }
-    setGlobalFieldOpts(opts: Partial<O>) {
-      this.opts = {...this.defaultOpts(), ...opts, ...this._fieldOpts} as Required<O>;
-    }
-
-    addErrorMessages(errorMessages: ErrorMessages | undefined) {
-      this.errorMessages = {...this.errorMessages, ...errorMessages};
-    }
-    _serialize(value: any, params: SerializeParams) {
-      return value
-    };
-    _deserialize(value: any, params: DeserializeParams): T {
+    if (isMissing(value) && !this._continueOnMissing) {
       return value;
     }
-    error (errorKey: string) {
-      const message = this.errorMessages[errorKey] || `Error in Field: ${errorKey}`;
-      throw new FieldValidationError(message);
+    return this._serialize(value, params);
+  }
+  deserialize(params: DeserializeParams): T {
+    let value = getValue(params.data, params.attr, this.opts.ignore);
+    if (isMissing(value)) {
+      value = this.opts.missing;
     }
-    serialize (params: SerializeParams) {
-      let value = getValue(params.obj, params.attr, this.opts.ignore);
-      if (isMissing(value)) {
-        value = this.opts.default || value;
+    if (isMissing(value)) {
+      if (this.opts.required) {
+        this.error("required");
       }
-      if (isMissing(value) && !this._continueOnMissing) {
+      if (!this._continueOnMissing) {
         return value;
       }
-      return this._serialize(value, params)
     }
-    deserialize (params: DeserializeParams): T {
-      let value = getValue(params.data, params.attr, this.opts.ignore);
-      if (isMissing(value)) {
-        value = this.opts.missing;
+    try {
+      return this._deserialize(value, params);
+    } catch (err) {
+      if (this.opts.treatErrorsAsMissing) {
+        return this._deserialize(this.opts.missing, params);
+      } else {
+        throw err;
       }
-      if (isMissing(value)) {
-        if (this.opts.required) {
-          this.error('required');
-        }
-        if (!this._continueOnMissing) {
-          return value;
-        }
-      }
-      try {
-        return this._deserialize(value, params);
-      } catch(err) {
-        if (this.opts.treatErrorsAsMissing) {
-          return this._deserialize(this.opts.missing, params);
-        } else {
-          throw err;
-        }
-      }
-    };
+    }
+  }
 }
 
 export default Field;

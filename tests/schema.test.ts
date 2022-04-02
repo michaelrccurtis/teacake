@@ -48,7 +48,6 @@ test("unknown raise", () => {
   expect(() => schema.load({ test: "TEST" })).toThrow(ValidationError);
 });
 
-
 test("global field opts", () => {
   const schema = new Schema(
     {

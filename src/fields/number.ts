@@ -12,12 +12,12 @@ export class NumberField extends Field<number, NumberFieldOptions> {
     return {
       ...defaultOpts,
       strict: false,
-    }
+    };
   }
   initialize() {
     this.addErrorMessages({
       invalid: "Not a valid number",
-    })
+    });
   }
 
   coerceToNumber(value: any) {
@@ -31,7 +31,7 @@ export class NumberField extends Field<number, NumberFieldOptions> {
 
   validateNumber(value: any) {
     if (toType(value) !== "number") {
-      this.error('invalid');
+      this.error("invalid");
     }
   }
   _serialize(value: any, params: any) {

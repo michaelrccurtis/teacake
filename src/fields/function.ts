@@ -12,7 +12,7 @@ export class FunctionField<T> extends Field<T, FunctionFieldOptions<T>> {
     return {
       ...defaultOpts,
       required: false,
-    }
+    };
   }
 
   initialize() {

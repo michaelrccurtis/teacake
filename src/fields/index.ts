@@ -6,13 +6,12 @@ import FunctionField from "./function";
 import ArrayField from "./array";
 import ObjectField from "./object";
 
-
 export const Fields = {
-  'String': StringField,
-  'Number': NumberField,
-  'Bool': BoolField,
-  'Nested': Nested,
-  'Function': FunctionField,
-  'Array': ArrayField,
-  'Object': ObjectField,
-}
+  String: StringField,
+  Number: NumberField,
+  Bool: BoolField,
+  Nested: Nested,
+  Function: FunctionField,
+  Array: ArrayField,
+  Object: ObjectField,
+};
